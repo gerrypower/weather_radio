@@ -69,7 +69,7 @@ radio = SI4707(0x22 >> 1)
 GPIO.setmode(GPIO.BCM) # Use board pin numbering
 
 GPIO.setup(17, GPIO.OUT) #  Setup the reset pin
-GPIO.output(17, GPIO.LOW)    #  Reset the Si4707.  
+GPIO.output(17, GPIO.LOW)    #  Reset the Si4707.
 time.sleep(radio.PUP_DELAY)
 GPIO.output(17, GPIO.HIGH)
 
@@ -128,9 +128,9 @@ time.sleep(0.5)
 def mainProgram():
 
         while True:
-                
+
                 global eomCnt
-                
+
                 if GPIO.event_detected(23):
                         getStatus();
                 if (radio.intStatus & radio.INTAVL):
@@ -153,9 +153,9 @@ def mainProgram():
                         else:
                                 return
 
-		if (eomCnt > 2):
-			eomCnt = 0
-			#sendAlert()
+        if (eomCnt > 2):
+            eomCnt = 0
+            #sendAlert()
 
 #  Status bits are processed here.
 
@@ -178,61 +178,61 @@ def getStatus():
                 radio.getSameStatus(radio.INTACK)
 
                 if (radio.sameStatus & radio.EOMDET):
-			global eomCnt
+            global eomCnt
                         radio.sameFlush()
                         print "EOM detected.\n"
-			eomCnt = eomCnt + 1
-			#print int(eomCnt)			
-			##More application specific code could go here. (Mute audio, turn something on/off, etc.)
+            eomCnt = eomCnt + 1
+            #print int(eomCnt)
+            ##More application specific code could go here. (Mute audio, turn something on/off, etc.)
                         return
                 if (radio.msgStatus & radio.MSGAVL and (not(radio.msgStatus & radio.MSGUSD))): # If a message is available and not already used,
                         radio.sameParse()
 
 
                 if (radio.msgStatus & radio.MSGPAR):
-			
-			global msg
-			msg = "Subject: Pi SAME Alert\r\n\r\n"
-			msg = msg + "ZCZC"
+
+            global msg
+            msg = "Subject: Pi SAME Alert\r\n\r\n"
+            msg = msg + "ZCZC"
                         radio.msgStatus = operator.iand(radio.msgStatus,~radio.MSGPAR) # Clear the parse status, so that we don't print it again.
                         print ''.join(radio.finalMsg), "\n"
-			msg = msg + str(''.join(radio.finalMsg))
-			msg = msg + "\n\n"
+            msg = msg + str(''.join(radio.finalMsg))
+            msg = msg + "\n\n"
                         print "Originator: ", ''.join(radio.sameOriginatorName)
-			msg = msg + "Originator: "
-			msg = msg + str(''.join(radio.sameOriginatorName))
-			msg = msg + "\n"
+            msg = msg + "Originator: "
+            msg = msg + str(''.join(radio.sameOriginatorName))
+            msg = msg + "\n"
                         print "Event: ", ''.join(radio.sameEventName)
-			msg = msg + "Event: "
-			msg = msg + str(''.join(radio.sameEventName))
-			msg = msg + "\n"
+            msg = msg + "Event: "
+            msg = msg + str(''.join(radio.sameEventName))
+            msg = msg + "\n"
                         print "Locations: ", int(radio.sameLocations)
-			msg = msg + "Locations: "
-			msg = msg + str(int(radio.sameLocations))
-			msg = msg + "\n"
+            msg = msg + "Locations: "
+            msg = msg + str(int(radio.sameLocations))
+            msg = msg + "\n"
                         print "Location Codes:"
-			msg = msg + "Location Codes: "
+            msg = msg + "Location Codes: "
 
-                        
+
                         print ','.join(radio.sameLocationCodes)
-			msg = msg + str(','.join(radio.sameLocationCodes))
-			
+            msg = msg + str(','.join(radio.sameLocationCodes))
+
                         print "\nDuration: ", ''.join(radio.sameDuration)
-			msg = msg + "\nDuration: "
-			msg = msg + str(''.join(radio.sameDuration))
-			msg = msg + "\n"
+            msg = msg + "\nDuration: "
+            msg = msg + str(''.join(radio.sameDuration))
+            msg = msg + "\n"
                         print "Day: ", ''.join(radio.sameDay)
-			msg = msg + "Day: "
-			msg = msg + str(''.join(radio.sameDay))
-			msg = msg + "\n"
+            msg = msg + "Day: "
+            msg = msg + str(''.join(radio.sameDay))
+            msg = msg + "\n"
                         print "Time: ", ''.join(radio.sameTime)
-			msg = msg + "Time: "
-			msg = msg + str(''.join(radio.sameTime))
-			msg = msg + "\n"
+            msg = msg + "Time: "
+            msg = msg + str(''.join(radio.sameTime))
+            msg = msg + "\n"
                         print "Callsign: ", ''.join(radio.sameCallSign), "\n"
-			msg = msg + "Callsign: "
-			msg = msg + str(''.join(radio.sameCallSign))
-			msg = msg + "\n"		
+            msg = msg + "Callsign: "
+            msg = msg + str(''.join(radio.sameCallSign))
+            msg = msg + "\n"
 
                 if (radio.msgStatus & radio.MSGPUR):  #  Signals that the third header has been received.
                         radio.sameFlush()
@@ -256,7 +256,7 @@ def getStatus():
 
                  # More application specific code could go here.  (Mute audio, turn something on/off, etc.)
 
-		radio.sameWat = radio.asqStatus
+        radio.sameWat = radio.asqStatus
 
 
         if (radio.intStatus & radio.ERRINT):
@@ -266,21 +266,21 @@ def getStatus():
         return
 
 def sendAlert():
-	# Credentials (if needed)
+    # Credentials (if needed)
         username = "yourusername@gmail.com"
         password = "yourpassword"
 
-	# The actual mail send
-	fromaddr = "yourusername@gmail.com"
+    # The actual mail send
+    fromaddr = "yourusername@gmail.com"
         toaddrs  = "recipient@emailhost.com"
         #toaddrs = ["email1@gmail.com","email2@gmail.com"]
-	server = smtplib.SMTP('smtp.gmail.com:587')
-       	server.starttls()
-       	server.login(username,password)
-       	server.sendmail(fromaddr, toaddrs, msg)
-       	server.quit()
-	print "Message Sent"
-	return
+    server = smtplib.SMTP('smtp.gmail.com:587')
+        server.starttls()
+        server.login(username,password)
+        server.sendmail(fromaddr, toaddrs, msg)
+        server.quit()
+    print "Message Sent"
+    return
 
 def getFunction(function):
 
@@ -319,7 +319,7 @@ def getFunction(function):
                 if (radio.volume >= 0x003F): return
                 radio.volume += 1
 
-	elif (function == 'm') or (function == 'm\n'):
+    elif (function == 'm') or (function == 'm\n'):
                 if (radio.mute):
                         radio.setMute(radio.OFF)
                         print "Mute: Off"
@@ -329,8 +329,8 @@ def getFunction(function):
                         radio.setMute(radio.ON)
                         print "Mute: On"
                         return
-		
-		
+
+
         elif (function == 'o') or (function == 'o\n'):
                 if (radio.power):
                         radio.off()
@@ -343,23 +343,23 @@ def getFunction(function):
                         radio.tune(radio.freqLowByte[radio.currentFreq])
                         return
 
-	elif (function == 'r') or (function == 'r\n'):
-		radio.getRsqStatus(radio.CHECK)
+    elif (function == 'r') or (function == 'r\n'):
+        radio.getRsqStatus(radio.CHECK)
 
-	elif (function == 'z') or (function == 'z\n'):
-		sendAlert()
+    elif (function == 'z') or (function == 'z\n'):
+        sendAlert()
 
         else:
                 print "Menu Command Not Recognized"
                 return
 
 if __name__ == '__main__':
-	
-	try:
-		while 1:
+
+    try:
+        while 1:
                         mainProgram();
 
-	except  KeyboardInterrupt:
+    except  KeyboardInterrupt:
                 GPIO.cleanup();
                 print "program closed out"
 
