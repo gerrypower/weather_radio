@@ -111,7 +111,7 @@ radio.setProperty(radio.WB_ASQ_INT_SOURCE, (radio.ALERTOFIEN | radio.ALERTONIEN)
 
 #  Tune to the desired frequency.
 time.sleep(0.5)
-radio.tuneDirect(162550)  #  Change to local frequency. 6 digits only.
+radio.tuneDirect(162400)  #  Change to local frequency. 6 digits only.
 
 #if your unsure of local frequency or there are more than one, uncomment next line
 #and it will select best frequncy to boot to. Besure to comment out radio.tuneDirect.
