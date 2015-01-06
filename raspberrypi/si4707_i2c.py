@@ -36,7 +36,7 @@ import time
 
 class SI4707 :
 
-    i2c = None
+        i2c = None
 
         ON =                                    0x01      #  Used for Power/Mute On.
         OFF =                                   0x00      #  Used for Power/Mute Off.
@@ -47,7 +47,7 @@ class SI4707 :
         RADIO_ADDRESS =                         0x22 >> 1 #  I2C address of the Si4707 (w/SEN pin LOW)
         RADIO_VOLUME =                          0x003F    #  Default Volume.
 
-    #  SAME Definitions.
+        #  SAME Definitions.
 
         SAME_CONFIDENCE_THRESHOLD =               1      #  Must be 1, 2 or 3, nothing else!
         SAME_BUFFER_SIZE =                      255      #  The maximum number of receive bytes.
@@ -136,7 +136,7 @@ class SI4707 :
         ERRINT =                        0x40      #  Error Interrupt.
         CTSINT =                        0x80      #  Clear To Send Interrupt.
 
-    #  Si4707 Status Register Masks.
+        #  Si4707 Status Register Masks.
 
         VALID =                         0x01      #  Valid Channel.
         AFCRL =                         0x02      #  AFC Rail Indicator.
@@ -255,7 +255,7 @@ class SI4707 :
         rxBufferLength = 0
 
         finalMsg = []
-    tempLocation = [None] * 7
+        tempLocation = [None] * 7
         endMsgFlag = 0
 
         response = [None]*15
@@ -271,7 +271,7 @@ class SI4707 :
         #
         SI4707_PATCH_DATA =[0x15, 0x00, 0x00, 0x04, 0xAE, 0x4D, 0x24, 0xBA,
                         0x16, 0x37, 0xB1, 0x23, 0xAC, 0x00, 0x00, 0x00,
-            0x15, 0x00, 0x00, 0x58, 0xEB, 0x73, 0xC7, 0x0A,
+                        0x15, 0x00, 0x00, 0x58, 0xEB, 0x73, 0xC7, 0x0A,
                         0x16, 0xC1, 0x7D, 0xE9, 0x11, 0x6E, 0xA0, 0xDC,
                         0x16, 0xE4, 0x01, 0x2A, 0x5F, 0xA9, 0xA9, 0x43,
                         0x16, 0x34, 0x33, 0x1B, 0x1B, 0xC2, 0x44, 0x6E,
@@ -313,7 +313,7 @@ class SI4707 :
             self.address = address
             self.debug = debug
 
-    #  Powers up the Si4707.
+        #  Powers up the Si4707.
 
         def on(self):
             if (self.power == self.ON): return
@@ -324,7 +324,7 @@ class SI4707 :
 
             self.power = self.ON
 
-    #  Gets the revision of the Si4707.
+        #  Gets the revision of the Si4707.
 
         def getRevision(self):
             self.writeCommand(self.GET_REV);
@@ -347,7 +347,7 @@ class SI4707 :
 
         def patch(self):
             if (self.power == self.ON):
-            return
+                return
 
             self.i2c.writeList(self.POWER_UP, [(self.GPO2EN | self.PATCH | self.XOSCEN | self.WB), self.OPMODE])
             time.sleep(self.PUP_DELAY)
@@ -356,19 +356,19 @@ class SI4707 :
             pData = self.SI4707_PATCH_DATA
             i = 0
             for i in range(0,len(self.SI4707_PATCH_DATA),8):
-            self.i2c.writeList(pData[i],[pData[i+1],pData[i+2],pData[i+3],pData[i+4],pData[i+5],pData[i+6],pData[i+7]])
-                    #print hex(pData[i]),hex(pData[i+1]),hex(pData[i+2]),hex(pData[i+3]),hex(pData[i+4]),hex(pData[i+5]),hex(pData[i+6]),hex(pData[i+7])
-                    time.sleep(0.02)
-                    #self.readStatus();
+                self.i2c.writeList(pData[i],[pData[i+1],pData[i+2],pData[i+3],pData[i+4],pData[i+5],pData[i+6],pData[i+7]])
+                #print hex(pData[i]),hex(pData[i+1]),hex(pData[i+2]),hex(pData[i+3]),hex(pData[i+4]),hex(pData[i+5]),hex(pData[i+6]),hex(pData[i+7])
+                time.sleep(0.02)
+                #self.readStatus();
 
-        self.power = self.ON
+            self.power = self.ON
 
     #  Powers down the Si4707.
 
         def off(self):
 
             if (self.power == self.OFF):
-            return
+                return
 
             self.i2c.write8(self.POWER_DOWN, 0x00)
             self.power = self.OFF
@@ -378,16 +378,16 @@ class SI4707 :
 
         def tuneDirect(self, direct):
             if (direct < 162400) or (direct > 162550):
-            return
+                return
             direct = direct / 2.5
             direct = int(direct)
             self.channel = direct
             #print self.channel
             i = 0
             for i in range(0, 7):
-            if self.freqHighByte << 8 | self.freqLowByte[i] == self.channel:
-                self.currentFreq = i
-                print "\nDirected Freq Selected:", self.freqNow[self.currentFreq], "MHz\n"
+                if self.freqHighByte << 8 | self.freqLowByte[i] == self.channel:
+                    self.currentFreq = i
+            print "\nDirected Freq Selected:", self.freqNow[self.currentFreq], "MHz\n"
             self.tune(self.freqLowByte[self.currentFreq]);
             return
 
@@ -413,12 +413,12 @@ class SI4707 :
             self.setMute(self.ON);
 
             for i in range(0,7):
-                    self.currentFreq = i
-                    self.tune(self.freqLowByte[i]);
+                self.currentFreq = i
+                self.tune(self.freqLowByte[i]);
 
-                if (self.rssi > best_rssi):
-                    best_rssi = self.rssi
-                    best_channel = i
+            if (self.rssi > best_rssi):
+                best_rssi = self.rssi
+                best_channel = i
 
             self.currentFreq = best_channel
             self.tune(self.freqLowByte[best_channel]);
@@ -450,16 +450,16 @@ class SI4707 :
         def getRsqStatus(self, mode):
             self.i2c.write8(self.WB_RSQ_STATUS, mode)
             self.response = self.i2c.readList(0, 8)
-        self.rsqStatus = self.response[1]
+            self.rsqStatus = self.response[1]
             self.rssi = self.response[4]
             self.snr = self.response[5]
             self.freqoff = self.response[7]
             print "Freq:", self.freqNow[self.currentFreq], "RSSI:", int(self.rssi-107), "dBm", " SNR:", int(self.snr), "dBuV"
 
             if (self.freqoff >= 128):
-            self.freqoff = (self.freqoff - 256) >> 1
+                self.freqoff = (self.freqoff - 256) >> 1
             else:
-            self.freqoff = (self.freqoff >> 1)
+                self.freqoff = (self.freqoff >> 1)
             print "Freq Offset:", int(self.freqoff), "Hz"
             return
     #  Gets the current SAME Status.
@@ -467,7 +467,7 @@ class SI4707 :
         def getSameStatus(self, mode):
             i = 0
 
-        markChar = 0
+            markChar = 0
 
             self.i2c.writeList(self.WB_SAME_STATUS,[mode, 0x00])
             self.response = self.i2c.readList(0, 4)
@@ -478,79 +478,79 @@ class SI4707 :
 
 
             if (not(self.sameStatus & self.HDRRDY)):
-            return                  #  If no HDRRDY, return.
+                return                  #  If no HDRRDY, return.
 
             #TIMER1_START();                #  Start/Re-start the 6 second timer.
 
             self.sameHeaderCount += 1
 
             if (self.sameHeaderCount >= 3): #  If this is the third Header, set msgStatus to show that it needs to be purged after usage.
-            self.msgStatus = operator.ior(self.msgStatus,self.MSGPUR)
+                self.msgStatus = operator.ior(self.msgStatus,self.MSGPUR)
 
             if (self.sameLength < self.SAME_MIN_LENGTH):
-            return  #  Don't process messages that are too short to be valid.
+                return  #  Don't process messages that are too short to be valid.
 
             for i in range(0, self.sameLength, 8):
-            self.i2c.writeList(self.WB_SAME_STATUS, [self.CHECK, i])
+                self.i2c.writeList(self.WB_SAME_STATUS, [self.CHECK, i])
 
-                    self.response = self.i2c.readList(0, 14)
+                self.response = self.i2c.readList(0, 14)
 
 
-                    self.sameConf[0] = (self.response[5] & self.SAME_STATUS_OUT_CONF0) >> self.SAME_STATUS_OUT_CONF0_SHFT
-            self.sameConf[1] = (self.response[5] & self.SAME_STATUS_OUT_CONF1) >> self.SAME_STATUS_OUT_CONF1_SHFT
-                    self.sameConf[2] = (self.response[5] & self.SAME_STATUS_OUT_CONF2) >> self.SAME_STATUS_OUT_CONF2_SHFT
-                    self.sameConf[3] = (self.response[5] & self.SAME_STATUS_OUT_CONF3) >> self.SAME_STATUS_OUT_CONF3_SHFT
-                    self.sameConf[4] = (self.response[4] & self.SAME_STATUS_OUT_CONF4) >> self.SAME_STATUS_OUT_CONF4_SHFT
-                    self.sameConf[5] = (self.response[4] & self.SAME_STATUS_OUT_CONF5) >> self.SAME_STATUS_OUT_CONF5_SHFT
-                    self.sameConf[6] = (self.response[4] & self.SAME_STATUS_OUT_CONF6) >> self.SAME_STATUS_OUT_CONF6_SHFT
-                    self.sameConf[7] = (self.response[4] & self.SAME_STATUS_OUT_CONF7) >> self.SAME_STATUS_OUT_CONF7_SHFT
+                self.sameConf[0] = (self.response[5] & self.SAME_STATUS_OUT_CONF0) >> self.SAME_STATUS_OUT_CONF0_SHFT
+                self.sameConf[1] = (self.response[5] & self.SAME_STATUS_OUT_CONF1) >> self.SAME_STATUS_OUT_CONF1_SHFT
+                self.sameConf[2] = (self.response[5] & self.SAME_STATUS_OUT_CONF2) >> self.SAME_STATUS_OUT_CONF2_SHFT
+                self.sameConf[3] = (self.response[5] & self.SAME_STATUS_OUT_CONF3) >> self.SAME_STATUS_OUT_CONF3_SHFT
+                self.sameConf[4] = (self.response[4] & self.SAME_STATUS_OUT_CONF4) >> self.SAME_STATUS_OUT_CONF4_SHFT
+                self.sameConf[5] = (self.response[4] & self.SAME_STATUS_OUT_CONF5) >> self.SAME_STATUS_OUT_CONF5_SHFT
+                self.sameConf[6] = (self.response[4] & self.SAME_STATUS_OUT_CONF6) >> self.SAME_STATUS_OUT_CONF6_SHFT
+                self.sameConf[7] = (self.response[4] & self.SAME_STATUS_OUT_CONF7) >> self.SAME_STATUS_OUT_CONF7_SHFT
 
-                    self.sameData[0] = self.response[6]
-                    self.sameData[1] = self.response[7]
-                    self.sameData[2] = self.response[8]
-                    self.sameData[3] = self.response[9]
-                    self.sameData[4] = self.response[10]
-                    self.sameData[5] = self.response[11]
-                    self.sameData[6] = self.response[12]
-                    self.sameData[7] = self.response[13]
-                    j = 0
-                    for j in range (0,8):
-                        self.rxBuffer[j + i] = self.sameData[j]
-                        self.rxConfidence[j + i] = self.sameConf[j]
+                self.sameData[0] = self.response[6]
+                self.sameData[1] = self.response[7]
+                self.sameData[2] = self.response[8]
+                self.sameData[3] = self.response[9]
+                self.sameData[4] = self.response[10]
+                self.sameData[5] = self.response[11]
+                self.sameData[6] = self.response[12]
+                self.sameData[7] = self.response[13]
+                j = 0
+                for j in range (0,8):
+                    self.rxBuffer[j + i] = self.sameData[j]
+                    self.rxConfidence[j + i] = self.sameConf[j]
 
-                        if (self.rxBuffer[j + i] == 47): # "/" symbol in callsign
-                    markChar = 1
+                    if (self.rxBuffer[j + i] == 47): # "/" symbol in callsign
+                        markChar = 1
 
-                if ((self.rxBuffer[j + i] == 45) and (markChar)):
-                    self.sameLength = (j + i)
-                                break
+                    if ((self.rxBuffer[j + i] == 45) and (markChar)):
+                        self.sameLength = (j + i)
+                        break
 
             self.msgStatus = operator.ior(self.msgStatus, self.MSGAVL)
             i = 0
 
             for i in range(0,self.sameLength):
-                    #if (self.rxConfidence[i] > self.SAME_CONFIDENCE_THRESHOLD):
-                    #self.rxConfidence[i] = self.SAME_CONFIDENCE_THRESHOLD
+                #if (self.rxConfidence[i] > self.SAME_CONFIDENCE_THRESHOLD):
+                #self.rxConfidence[i] = self.SAME_CONFIDENCE_THRESHOLD
 
                 if (self.rxConfidence[i] < self.SAME_CONFIDENCE_THRESHOLD):
-                        self.msgStatus = operator.iand(self.msgStatus, ~self.MSGAVL)
+                    self.msgStatus = operator.iand(self.msgStatus, ~self.MSGAVL)
 
 
 
             if (not(self.msgStatus & self.MSGAVL)):
-            return
+                return
 
             self.rxBufferIndex = 0
             self.rxBufferLength = self.sameLength
 
-    #  Gets the current ASQ Status.
+	#  Gets the current ASQ Status.
 
         def getAsqStatus(self, mode):
             self.i2c.write16(self.WB_ASQ_STATUS, mode);
             self.response = self.i2c.readList(0,3)
             self.asqStatus = self.response[1]
 
-    #  Gets the current AGC Status.
+	#  Gets the current AGC Status.
 
         def getAgcStatus(self):
             self.i2c.write8(self.WB_AGC_STATUS);
@@ -558,29 +558,29 @@ class SI4707 :
             self.agcStatus = self.response[1]
 
 
-    #  Sets the audio volume level.
+	#  Sets the audio volume level.
 
         def setVolume(self, volume):
             if (volume > 0x003F) or (volume < 0x0000):
-            return
+                return
 
             self.setProperty(self.RX_VOLUME, volume);
 
-    #  Sets the current Mute state.
+	#  Sets the current Mute state.
 
         def setMute(self, value):
             if (value == self.OFF):
-            self.setProperty(self.RX_HARD_MUTE, 0x0000);
-                    self.mute = self.OFF
-                    return
+                self.setProperty(self.RX_HARD_MUTE, 0x0000);
+                self.mute = self.OFF
+                return
 
             elif (value == self.ON):
-            self.setProperty(self.RX_HARD_MUTE, 0x0003);
-            self.mute = self.ON
-                    return
+                self.setProperty(self.RX_HARD_MUTE, 0x0003);
+                self.mute = self.ON
+                return
 
             else:
-            return
+                return
 
 
     #  Sets a specified property value.
@@ -590,7 +590,7 @@ class SI4707 :
             vHi, vLo = self.hexSplit16(value);
             self.i2c.writeList(self.SET_PROPERTY, [0x00, pHi, pLo, vHi, vLo])
             time.sleep(0.5)
-        return
+            return
 
     #  Returns a specified property value.
 
@@ -625,7 +625,7 @@ class SI4707 :
                 return int(-1)
 
             else:
-                    return int(self.rxBufferLength - self.rxBufferIndex)
+                return int(self.rxBufferLength - self.rxBufferIndex)
 
 
     #  Return received characters.
@@ -634,12 +634,12 @@ class SI4707 :
             value = 0x00
 
             if (self.rxBufferIndex < self.rxBufferLength):
-                    value = self.rxBuffer[self.rxBufferIndex]
-            self.rxBufferIndex += 1
+                value = self.rxBuffer[self.rxBufferIndex]
+                self.rxBufferIndex += 1
 
             else:
-                    self.rxBufferIndex, self.rxBufferLength = 0
-                    self.msgStatus = operator.ior(self.msgStatus, self.MSGUSD)
+                self.rxBufferIndex, self.rxBufferLength = 0
+                self.msgStatus = operator.ior(self.msgStatus, self.MSGUSD)
 
             return chr(value)
 
@@ -650,11 +650,11 @@ class SI4707 :
             self.finalMsg = []
             i = 0
             for i in range(0, self.sameLength):
-            self.finalMsg.append(chr(self.rxBuffer[i]))
-                    time.sleep(0.02)
+                self.finalMsg.append(chr(self.rxBuffer[i]))
+                time.sleep(0.02)
 
             if (not(self.msgStatus & self.MSGAVL)):       #  If no message is Available, return
-            return
+                return
 
             self.samePlusIndex = int(0)
             self.sameLocations = int(0)
@@ -675,35 +675,35 @@ class SI4707 :
             self.sameEventName[3] = chr(32)
 
             for i in range (0, len(self.rxBuffer)):#  Look for the Plus Sign.
-            if (self.rxBuffer[i] == 43):
-                self.samePlusIndex = i #  Found it.
+                if (self.rxBuffer[i] == 43):
+                    self.samePlusIndex = i #  Found it.
 
 
-                if (self.rxBuffer[i] >= 0x30 and self.rxBuffer[i] <= 0x39):  #  If the value is ascii, strip off the upper bits.
-                    self.rxBuffer[i] = self.rxBuffer[i] & 0x0F
+                    if (self.rxBuffer[i] >= 0x30 and self.rxBuffer[i] <= 0x39):  #  If the value is ascii, strip off the upper bits.
+                        self.rxBuffer[i] = self.rxBuffer[i] & 0x0F
 
             #print "Found + sign:", self.samePlusIndex
             if (self.samePlusIndex == 0):
-            return        #  No Plus Sign found.
+                return        #  No Plus Sign found.
 
 
 
             self.sameLocationCodes = []
             for i in range(6, self.samePlusIndex): #  There are no sameLocationCodes past the samePlusIndex.
-                    if (self.rxBuffer[i] == 45):
-                        self.tempLocation = [None] * 7  #  Clear out any remaining data.
-                        self.tempLocation[0] = chr(self.rxBuffer[i + 1])
-                        self.tempLocation[1] = chr(self.rxBuffer[i + 2])
-                        self.tempLocation[2] = chr(self.rxBuffer[i + 3])
-                        self.tempLocation[3] = chr(self.rxBuffer[i + 4])
-                        self.tempLocation[4] = chr(self.rxBuffer[i + 5])
-                        self.tempLocation[5] = chr(self.rxBuffer[i + 6])
-                self.tempLocation[6] = chr(32)
-                        self.sameLocationCodes.append(''.join(self.tempLocation))
-                        self.sameLocations += 1
+                if (self.rxBuffer[i] == 45):
+                    self.tempLocation = [None] * 7  #  Clear out any remaining data.
+                    self.tempLocation[0] = chr(self.rxBuffer[i + 1])
+                    self.tempLocation[1] = chr(self.rxBuffer[i + 2])
+                    self.tempLocation[2] = chr(self.rxBuffer[i + 3])
+                    self.tempLocation[3] = chr(self.rxBuffer[i + 4])
+                    self.tempLocation[4] = chr(self.rxBuffer[i + 5])
+                    self.tempLocation[5] = chr(self.rxBuffer[i + 6])
+                    self.tempLocation[6] = chr(32)
+                    self.sameLocationCodes.append(''.join(self.tempLocation))
+                    self.sameLocations += 1
 
-                        if (self.sameLocations > self.SAME_LOCATION_CODES): #  SAME_LOCATION_CODES (31) is the maximum allowed.
-                                break
+                    if (self.sameLocations > self.SAME_LOCATION_CODES): #  SAME_LOCATION_CODES (31) is the maximum allowed.
+                        break
 
 
             self.sameDuration = [None] * 5
@@ -711,29 +711,29 @@ class SI4707 :
             self.sameDuration[1] = chr(self.rxBuffer[self.samePlusIndex + 2])
             self.sameDuration[2] = chr(self.rxBuffer[self.samePlusIndex + 3])
             self.sameDuration[3] = chr(self.rxBuffer[self.samePlusIndex + 4])
-        self.sameDuration[4] = chr(32)
+            self.sameDuration[4] = chr(32)
 
             self.sameDay = [None] * 4
             self.sameDay[0] = chr(self.rxBuffer[self.samePlusIndex + 6])
             self.sameDay[1] = chr(self.rxBuffer[self.samePlusIndex + 7])
             self.sameDay[2] = chr(self.rxBuffer[self.samePlusIndex + 8])
-        self.sameDay[3] = chr(32)
+            self.sameDay[3] = chr(32)
 
             self.sameTime = [None] * 5
             self.sameTime[0] = chr(self.rxBuffer[self.samePlusIndex + 9])
             self.sameTime[1] = chr(self.rxBuffer[self.samePlusIndex + 10])
             self.sameTime[2] = chr(self.rxBuffer[self.samePlusIndex + 11])
             self.sameTime[3] = chr(self.rxBuffer[self.samePlusIndex + 12])
-        self.sameTime[4] = chr(32)
+            self.sameTime[4] = chr(32)
 
             i = 0
 
             for i in range(0, 9):
-            if (self.rxBuffer[i + self.samePlusIndex + 14] == 45):
-                        self.sameCallSign[i] = chr(32)
-                        self.endMsgFlag = int(i + self.samePlusIndex + 14)
-                    else:
-                        self.sameCallSign[i] = chr(self.rxBuffer[i + self.samePlusIndex + 14])
+                if (self.rxBuffer[i + self.samePlusIndex + 14] == 45):
+                    self.sameCallSign[i] = chr(32)
+                    self.endMsgFlag = int(i + self.samePlusIndex + 14)
+                else:
+                    self.sameCallSign[i] = chr(self.rxBuffer[i + self.samePlusIndex + 14])
 
             self.msgStatus = operator.ior(self.msgStatus,(self.MSGUSD | self.MSGPAR))     # Set the status to show the message was successfully Parsed.
 
@@ -749,8 +749,8 @@ class SI4707 :
             self.getSameStatus(self.CLRBUF | self.INTACK);
 
             for i in range(0, self.SAME_BUFFER_SIZE):
-                    self.rxBuffer[i] = 0x00
-                    self.rxConfidence[i] = 0x00
+                self.rxBuffer[i] = 0x00
+                self.rxConfidence[i] = 0x00
 
 
             self.msgStatus = 0x00
@@ -766,11 +766,11 @@ class SI4707 :
             self.sameFlush();
             i = 0
             for i in range(0, len(self.strng)):
-                    self.rxBuffer[i] = strng[i]
-                    self.rxConfidence[i] = self.SAME_CONFIDENCE_THRESHOLD
-                    self.sameLength += 1
-                    if (self.sameLength == self.SAME_BUFFER_SIZE):
-                        break
+                self.rxBuffer[i] = strng[i]
+                self.rxConfidence[i] = self.SAME_CONFIDENCE_THRESHOLD
+                self.sameLength += 1
+                if (self.sameLength == self.SAME_BUFFER_SIZE):
+                    break
             return
 
     #  Write a single command.
@@ -818,7 +818,7 @@ class SI4707 :
 
         def readStatus(self):
             self.response = self.i2c.readList(0,1)
-        time.sleep(self.CMD_DELAY)
+            time.sleep(self.CMD_DELAY)
             #print hex(self.response[0])
             return
     #  Reads the number of bytes specified by quantity.
@@ -831,5 +831,5 @@ class SI4707 :
             #time.sleep(self.CMD_DELAY)
             return
 
-    #  End of SI4707 class.py
+	#  End of SI4707 class.py
             return 0
