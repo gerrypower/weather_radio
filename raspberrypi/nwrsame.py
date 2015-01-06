@@ -27,6 +27,7 @@ import sys
 import select
 import operator
 import time
+import pycurl
 
 
 
@@ -155,7 +156,7 @@ def mainProgram():
 
         if (eomCnt > 2):
             eomCnt = 0
-            #sendAlert()
+            sendAlert(msg, 1)
 
 #  Status bits are processed here.
 
@@ -265,21 +266,17 @@ def getStatus():
 
         return
 
-def sendAlert():
-    # Credentials (if needed)
-        username = "yourusername@gmail.com"
-        password = "yourpassword"
+def sendAlert(description, priority=0):
+    # API Key (required)
+        apiKey = "41a9d5899b6cf51a9bab5a958a0bb61471bed237"
+        application = "Weather Radio"
+        event  = "Weather Alert"
 
-	# The actual mail send
-        fromaddr = "yourusername@gmail.com"
-        toaddrs  = "recipient@emailhost.com"
-        #toaddrs = ["email1@gmail.com","email2@gmail.com"]
-        server = smtplib.SMTP('smtp.gmail.com:587')
-        server.starttls()
-        server.login(username,password)
-        server.sendmail(fromaddr, toaddrs, msg)
-        server.quit()
-        print "Message Sent"
+        c = pycurl.Curl()
+        c.setopt(c.URL, 'https://api.prowlapp.com/publicapi/add')
+        c.setopt(c.POSTFIELDS, 'apikey=' + apiKey + '&priority=' + `priority` + '&application=' + application + '&event=' + event + "&description=" + description)
+        c.perform()
+        print "Notification sent.\n"
         return
 
 def getFunction(function):
@@ -347,7 +344,7 @@ def getFunction(function):
                 radio.getRsqStatus(radio.CHECK)
 
         elif (function == 'z') or (function == 'z\n'):
-                sendAlert()
+                sendAlert(msg)
 
         else:
                 print "Menu Command Not Recognized"
